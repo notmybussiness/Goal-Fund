@@ -53,7 +53,9 @@ public class RebalanceService implements RebalanceUseCase {
                         ? RebalanceActionType.SELL
                         : RebalanceActionType.BUY;
             }
-            BigDecimal amount = diff.multiply(totalValue).divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP);
+            BigDecimal amount = type == RebalanceActionType.HOLD
+                    ? BigDecimal.ZERO
+                    : diff.multiply(totalValue).divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP);
             actions.add(new RebalanceAction(holding.symbol(), type, amount));
         }
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @RestController
@@ -32,13 +33,17 @@ public class RebalanceController {
             @Valid @RequestBody CreateProposalRequest request
     ) {
         Long effectiveUserId = userId == null ? 1L : userId;
-        return ResponseEntity.ok(rebalanceUseCase.createProposal(
-                effectiveUserId,
-                new RebalanceUseCase.RebalanceProposalRequest(
-                        request.portfolioId(),
-                        request.thresholdPercent()
-                )
-        ));
+        try {
+            return ResponseEntity.ok(rebalanceUseCase.createProposal(
+                    effectiveUserId,
+                    new RebalanceUseCase.RebalanceProposalRequest(
+                            request.portfolioId(),
+                            request.thresholdPercent()
+                    )
+            ));
+        } catch (NoSuchElementException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/{proposalId}")

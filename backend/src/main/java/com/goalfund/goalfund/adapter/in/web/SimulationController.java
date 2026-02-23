@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @RestController
@@ -31,15 +32,19 @@ public class SimulationController {
             @Valid @RequestBody CreateSimulationRequest request
     ) {
         Long effectiveUserId = userId == null ? 1L : userId;
-        return ResponseEntity.ok(simulationUseCase.createRun(
-                effectiveUserId,
-                new SimulationUseCase.SimulationRunRequest(
-                        request.goalId(),
-                        request.portfolioId(),
-                        request.scenarioCount(),
-                        request.months()
-                )
-        ));
+        try {
+            return ResponseEntity.ok(simulationUseCase.createRun(
+                    effectiveUserId,
+                    new SimulationUseCase.SimulationRunRequest(
+                            request.goalId(),
+                            request.portfolioId(),
+                            request.scenarioCount(),
+                            request.months()
+                    )
+            ));
+        } catch (NoSuchElementException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/{runId}")
