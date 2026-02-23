@@ -43,6 +43,11 @@ public class GoalMemoryRepository implements GoalRepositoryPort {
     public Optional<Goal> findById(Long goalId) {
         return Optional.ofNullable(goals.get(goalId));
     }
+
+    @Override
+    public void deleteById(Long goalId) {
+        goals.remove(goalId);
+    }
 }
 
 
