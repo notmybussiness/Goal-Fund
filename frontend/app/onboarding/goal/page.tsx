@@ -1,146 +1,162 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import { saveFormToMockStorage } from "@/lib/mockPersistence";
 
-type GoalErrors = {
-  targetAmount?: string;
-  targetDate?: string;
-  monthlySaving?: string;
+type GoalFormState = {
+  targetAmount: string;
+  targetDate: string;
+  monthlySavings: string;
 };
 
-const getLocalDateString = () => {
-  const now = new Date();
-  const timezoneOffsetMs = now.getTimezoneOffset() * 60_000;
-  return new Date(now.getTime() - timezoneOffsetMs).toISOString().split("T")[0];
+const INITIAL_STATE: GoalFormState = {
+  targetAmount: "",
+  targetDate: "",
+  monthlySavings: "",
 };
-
-const TODAY = getLocalDateString();
 
 export default function GoalOnboardingPage() {
-  const [targetAmount, setTargetAmount] = useState("");
-  const [targetDate, setTargetDate] = useState("");
-  const [monthlySaving, setMonthlySaving] = useState("");
-  const [errors, setErrors] = useState<GoalErrors>({});
+  const [form, setForm] = useState<GoalFormState>(INITIAL_STATE);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState("");
+  const [submissionMessage, setSubmissionMessage] = useState("");
 
-  const validateTargetAmount = (value: string) => {
-    const amount = Number(value);
-    if (!value.trim()) return "목표 금액을 입력해주세요.";
-    if (!Number.isFinite(amount) || amount <= 0) return "목표 금액은 0보다 큰 숫자여야 해요.";
-    return "";
-  };
+  const errors = useMemo(() => {
+    const nextErrors: Partial<Record<keyof GoalFormState, string>> = {};
+    const amount = Number(form.targetAmount);
+    const monthly = Number(form.monthlySavings);
 
-  const validateTargetDate = (value: string) => {
-    if (!value) return "목표일을 선택해주세요.";
-    if (value <= TODAY) return "목표일은 오늘 이후 날짜로 선택해주세요.";
-    return "";
-  };
-
-  const validateMonthlySaving = (value: string) => {
-    const monthly = Number(value);
-    if (!value.trim()) return "월 적립금을 입력해주세요.";
-    if (!Number.isFinite(monthly) || monthly <= 0) return "월 적립금은 0보다 큰 숫자여야 해요.";
-    if (Number(monthly) > Number(targetAmount || 0)) {
-      return "월 적립금은 목표 금액보다 클 수 없어요.";
+    if (!form.targetAmount.trim()) {
+      nextErrors.targetAmount = "목표 금액을 입력해 주세요.";
+    } else if (!Number.isInteger(amount) || amount <= 0) {
+      nextErrors.targetAmount = "목표 금액은 0보다 큰 정수여야 합니다.";
     }
-    return "";
-  };
 
-  const hasErrors = useMemo(() => Object.values(errors).some(Boolean), [errors]);
+    if (!form.targetDate) {
+      nextErrors.targetDate = "목표일을 선택해 주세요.";
+    } else {
+      const selectedDate = new Date(`${form.targetDate}T00:00:00`);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-  const validateAll = () => {
-    const nextErrors: GoalErrors = {
-      targetAmount: validateTargetAmount(targetAmount),
-      targetDate: validateTargetDate(targetDate),
-      monthlySaving: validateMonthlySaving(monthlySaving),
-    };
-    setErrors(nextErrors);
-    return !Object.values(nextErrors).some(Boolean);
-  };
+      if (selectedDate <= today) {
+        nextErrors.targetDate = "목표일은 오늘 이후 날짜로 설정해 주세요.";
+      }
+    }
 
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    if (!form.monthlySavings.trim()) {
+      nextErrors.monthlySavings = "월 적립금을 입력해 주세요.";
+    } else if (!Number.isInteger(monthly) || monthly <= 0) {
+      nextErrors.monthlySavings = "월 적립금은 0보다 큰 정수여야 합니다.";
+    } else if (Number.isInteger(amount) && amount > 0 && monthly > amount) {
+      nextErrors.monthlySavings = "월 적립금은 목표 금액보다 클 수 없습니다.";
+    }
+
+    return nextErrors;
+  }, [form.monthlySavings, form.targetAmount, form.targetDate]);
+
+  const hasErrors = Object.keys(errors).length > 0;
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitMessage("");
-
-    if (!validateAll()) {
-      setSubmitMessage("입력값을 확인한 뒤 다시 제출해주세요.");
+    if (hasErrors) {
+      setSubmissionMessage("입력값을 확인한 뒤 다시 시도해 주세요.");
       return;
     }
 
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 900));
+    setSubmissionMessage("");
+
+    const isStored = await saveFormToMockStorage("goal-onboarding-form", {
+      targetAmount: form.targetAmount,
+      targetDate: form.targetDate,
+      monthlySavings: form.monthlySavings
+    });
+
     setIsSubmitting(false);
-    setSubmitMessage("목표 정보가 저장되었어요.");
+    setSubmissionMessage(
+      isStored
+        ? "목표 정보가 저장되었습니다. (mock)"
+        : "로컬 저장소를 사용할 수 없어 화면 상태에만 반영되었습니다. (mock)"
+    );
   };
 
   return (
     <section className="panel">
       <h2>목표 온보딩</h2>
       <p className="muted">목표 금액, 목표일, 월 적립금을 입력합니다.</p>
-
-      <form onSubmit={onSubmit} noValidate>
+      <form onSubmit={handleSubmit} noValidate>
         <div className="grid cols-2" style={{ marginTop: 12 }}>
           <label>
             목표 금액(KRW)
             <input
-              className={errors.targetAmount ? "field-error" : ""}
+              className="form-input"
               style={{ width: "100%", marginTop: 6 }}
               placeholder="100000000"
-              inputMode="numeric"
-              value={targetAmount}
+              value={form.targetAmount}
               onChange={(event) => {
-                const value = event.target.value;
-                setTargetAmount(value);
-                setErrors((prev) => ({
-                  ...prev,
-                  targetAmount: validateTargetAmount(value),
-                  monthlySaving: monthlySaving ? validateMonthlySaving(monthlySaving) : prev.monthlySaving,
-                }));
+                setForm((prev) => ({ ...prev, targetAmount: event.target.value }));
               }}
+              aria-invalid={Boolean(errors.targetAmount)}
+              aria-describedby={errors.targetAmount ? "target-amount-error" : undefined}
             />
-            {errors.targetAmount ? <p className="error-text">{errors.targetAmount}</p> : null}
+            {errors.targetAmount ? (
+              <p id="target-amount-error" className="error-text">
+                {errors.targetAmount}
+              </p>
+            ) : null}
           </label>
-
           <label>
             목표일
             <input
-              className={errors.targetDate ? "field-error" : ""}
               type="date"
+              className="form-input"
               style={{ width: "100%", marginTop: 6 }}
-              value={targetDate}
+              value={form.targetDate}
               onChange={(event) => {
-                const value = event.target.value;
-                setTargetDate(value);
-                setErrors((prev) => ({ ...prev, targetDate: validateTargetDate(value) }));
+                setForm((prev) => ({ ...prev, targetDate: event.target.value }));
               }}
+              aria-invalid={Boolean(errors.targetDate)}
+              aria-describedby={errors.targetDate ? "target-date-error" : undefined}
             />
-            {errors.targetDate ? <p className="error-text">{errors.targetDate}</p> : null}
+            {errors.targetDate ? (
+              <p id="target-date-error" className="error-text">
+                {errors.targetDate}
+              </p>
+            ) : null}
           </label>
         </div>
 
-        <label style={{ display: "block", marginTop: 16 }}>
-          월 적립금(KRW)
-          <input
-            className={errors.monthlySaving ? "field-error" : ""}
-            style={{ width: "100%", marginTop: 6 }}
-            placeholder="500000"
-            inputMode="numeric"
-            value={monthlySaving}
-            onChange={(event) => {
-              const value = event.target.value;
-              setMonthlySaving(value);
-              setErrors((prev) => ({ ...prev, monthlySaving: validateMonthlySaving(value) }));
-            }}
-          />
-          {errors.monthlySaving ? <p className="error-text">{errors.monthlySaving}</p> : null}
-        </label>
+        <div style={{ marginTop: 12, maxWidth: 420 }}>
+          <label>
+            월 적립금(KRW)
+            <input
+              className="form-input"
+              style={{ width: "100%", marginTop: 6 }}
+              placeholder="1200000"
+              value={form.monthlySavings}
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, monthlySavings: event.target.value }));
+              }}
+              aria-invalid={Boolean(errors.monthlySavings)}
+              aria-describedby={errors.monthlySavings ? "monthly-savings-error" : undefined}
+            />
+            {errors.monthlySavings ? (
+              <p id="monthly-savings-error" className="error-text">
+                {errors.monthlySavings}
+              </p>
+            ) : null}
+          </label>
+        </div>
 
-        <button type="submit" className="primary-button" disabled={isSubmitting || hasErrors}>
+        <button type="submit" className="primary-button" disabled={hasErrors || isSubmitting}>
           {isSubmitting ? "저장 중..." : "목표 저장"}
         </button>
 
-        {submitMessage ? <p className={hasErrors ? "error-text" : "success-text"}>{submitMessage}</p> : null}
+        {submissionMessage ? (
+          <p className={hasErrors ? "error-text" : "success-text"} style={{ marginTop: 10 }}>
+            {submissionMessage}
+          </p>
+        ) : null}
       </form>
     </section>
   );
