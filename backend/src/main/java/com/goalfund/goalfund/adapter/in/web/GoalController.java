@@ -7,6 +7,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -86,6 +87,18 @@ public class GoalController {
                 )
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{goalId}")
+    public ResponseEntity<Void> deleteGoal(
+            @RequestHeader(value = "X-USER-ID", required = false) Long userId,
+            @PathVariable Long goalId
+    ) {
+        Long effectiveUserId = userId == null ? 1L : userId;
+        if (goalUseCase.deleteGoal(effectiveUserId, goalId)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
     public record CreateGoalRequest(

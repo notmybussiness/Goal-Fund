@@ -45,16 +45,18 @@ public class PortfolioController {
             @Valid @RequestBody AddHoldingRequest request
     ) {
         Long effectiveUserId = userId == null ? 1L : userId;
-        return ResponseEntity.ok(portfolioUseCase.addHolding(
-                effectiveUserId,
-                id,
-                new PortfolioUseCase.AddHoldingCommand(
-                        request.symbol(),
-                        request.assetType(),
-                        request.quantity(),
-                        request.marketValue()
+        return portfolioUseCase.addHolding(
+                        effectiveUserId,
+                        id,
+                        new PortfolioUseCase.AddHoldingCommand(
+                                request.symbol(),
+                                request.assetType(),
+                                request.quantity(),
+                                request.marketValue()
+                        )
                 )
-        ));
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     public record CreatePortfolioRequest(

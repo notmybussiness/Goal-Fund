@@ -70,6 +70,20 @@ public class GoalService implements GoalUseCase {
         return Optional.of(toResponse(goalRepositoryPort.save(updated)));
     }
 
+    @Override
+    public boolean deleteGoal(Long userId, Long goalId) {
+        boolean exists = goalRepositoryPort.findById(goalId)
+                .filter(goal -> goal.userId().equals(userId))
+                .isPresent();
+
+        if (!exists) {
+            return false;
+        }
+
+        goalRepositoryPort.deleteById(goalId);
+        return true;
+    }
+
     private GoalResponse toResponse(Goal goal) {
         return new GoalResponse(
                 goal.id(),
