@@ -4,12 +4,13 @@ import com.goalfund.goalfund.domain.model.AssetType;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface PortfolioUseCase {
 
     PortfolioResponse createPortfolio(Long userId, CreatePortfolioCommand command);
 
-    PortfolioResponse addHolding(Long userId, Long portfolioId, AddHoldingCommand command);
+    Optional<PortfolioResponse> addHolding(Long userId, Long portfolioId, AddHoldingCommand command);
 
     record CreatePortfolioCommand(
             String name,

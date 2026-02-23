@@ -17,6 +17,8 @@ public interface GoalUseCase {
 
     Optional<GoalResponse> updateGoal(Long userId, Long goalId, GoalPatchCommand command);
 
+    boolean deleteGoal(Long userId, Long goalId);
+
     record GoalCommand(
             String name,
             BigDecimal targetAmount,

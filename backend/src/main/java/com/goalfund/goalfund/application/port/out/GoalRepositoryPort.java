@@ -12,6 +12,8 @@ public interface GoalRepositoryPort {
     List<Goal> findByUserId(Long userId);
 
     Optional<Goal> findById(Long goalId);
+
+    void deleteById(Long goalId);
 }
 
 
