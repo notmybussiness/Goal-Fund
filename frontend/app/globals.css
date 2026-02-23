@@ -57,3 +57,43 @@ a {
   }
 }
 
+
+input {
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #0f172a;
+  color: var(--text);
+}
+
+.field-error {
+  border-color: var(--danger);
+}
+
+.error-text {
+  margin: 6px 0 0;
+  color: #fda4af;
+  font-size: 0.9rem;
+}
+
+.success-text {
+  margin: 10px 0 0;
+  color: #86efac;
+  font-size: 0.95rem;
+}
+
+.primary-button {
+  margin-top: 18px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #042316;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
