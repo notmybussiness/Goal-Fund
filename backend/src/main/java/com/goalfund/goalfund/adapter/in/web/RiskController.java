@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.NoSuchElementException;
+
 @RestController
 @RequestMapping("/api/v1/risk")
 public class RiskController {
@@ -24,7 +26,11 @@ public class RiskController {
             @RequestParam Long portfolioId
     ) {
         Long effectiveUserId = userId == null ? 1L : userId;
-        return ResponseEntity.ok(riskUseCase.getSnapshot(effectiveUserId, portfolioId));
+        try {
+            return ResponseEntity.ok(riskUseCase.getSnapshot(effectiveUserId, portfolioId));
+        } catch (NoSuchElementException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
 
