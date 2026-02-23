@@ -1,0 +1,8 @@
+# Default owners (update this account/team to your actual reviewer group if needed)
+* @notmybussiness
+
+# Path-specific ownership
+/backend/ @notmybussiness
+/frontend/ @notmybussiness
+/docs/ @notmybussiness
+/scripts/ @notmybussiness
