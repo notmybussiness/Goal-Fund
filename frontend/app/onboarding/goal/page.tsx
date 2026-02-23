@@ -8,7 +8,13 @@ type GoalErrors = {
   monthlySaving?: string;
 };
 
-const TODAY = new Date().toISOString().split("T")[0];
+const getLocalDateString = () => {
+  const now = new Date();
+  const timezoneOffsetMs = now.getTimezoneOffset() * 60_000;
+  return new Date(now.getTime() - timezoneOffsetMs).toISOString().split("T")[0];
+};
+
+const TODAY = getLocalDateString();
 
 export default function GoalOnboardingPage() {
   const [targetAmount, setTargetAmount] = useState("");
