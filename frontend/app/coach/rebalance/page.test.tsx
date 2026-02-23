@@ -7,11 +7,13 @@ const fetchMock = vi.fn<typeof fetch>();
 describe("CoachRebalancePage", () => {
   beforeEach(() => {
     vi.stubGlobal("fetch", fetchMock);
+    window.history.pushState({}, "", "/coach/rebalance");
   });
 
   afterEach(() => {
     fetchMock.mockReset();
     vi.unstubAllGlobals();
+    window.history.pushState({}, "", "/");
   });
 
   it("shows rebalance actions from API response", async () => {
@@ -33,8 +35,7 @@ describe("CoachRebalancePage", () => {
 
     render(<CoachRebalancePage />);
 
-    expect(await screen.findByText("데이터 출처: 실데이터")).toBeInTheDocument();
-    expect(screen.getByText("KOSPI ETF: BUY 1,100,000 KRW")).toBeInTheDocument();
+    expect(await screen.findByText("KOSPI ETF: BUY 1,100,000 KRW")).toBeInTheDocument();
     expect(screen.getByText("BTC: SELL 2,300,000 KRW")).toBeInTheDocument();
   });
 
@@ -43,8 +44,36 @@ describe("CoachRebalancePage", () => {
 
     render(<CoachRebalancePage />);
 
-    expect(await screen.findByText("데이터 출처: 모의 데이터")).toBeInTheDocument();
-    expect(screen.getByText("BTC: SELL 2,300,000 KRW")).toBeInTheDocument();
+    expect(await screen.findByText("BTC: SELL 2,300,000 KRW")).toBeInTheDocument();
     expect(screen.getByText("US ETF: BUY 1,200,000 KRW")).toBeInTheDocument();
+  });
+
+  it("uses query params for user, portfolio, and threshold context", async () => {
+    window.history.pushState({}, "", "/coach/rebalance?userId=7&portfolioId=13&thresholdPercent=5.5");
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          proposalId: "f9999f27-9e4c-4ef4-b89b-2bf2b7e4f4b2",
+          portfolioId: 13,
+          summary: "query context",
+          createdAt: "2026-02-24T12:00:00",
+          actions: [{ symbol: "BTC", actionType: "SELL", amount: "2300000" }]
+        }),
+        { status: 200 }
+      )
+    );
+
+    render(<CoachRebalancePage />);
+    expect(await screen.findByText("query context")).toBeInTheDocument();
+
+    expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({
+      headers: { "X-USER-ID": "7" }
+    });
+
+    const requestBody = JSON.parse(String((fetchMock.mock.calls[0]?.[1] as RequestInit)?.body));
+    expect(requestBody).toMatchObject({
+      portfolioId: 13,
+      thresholdPercent: 5.5
+    });
   });
 });

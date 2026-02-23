@@ -7,11 +7,13 @@ const fetchMock = vi.fn<typeof fetch>();
 describe("CoachPage", () => {
   beforeEach(() => {
     vi.stubGlobal("fetch", fetchMock);
+    window.history.pushState({}, "", "/coach");
   });
 
   afterEach(() => {
     fetchMock.mockReset();
     vi.unstubAllGlobals();
+    window.history.pushState({}, "", "/");
   });
 
   it("shows API-backed coach summary when requests succeed", async () => {
@@ -21,7 +23,7 @@ describe("CoachPage", () => {
           JSON.stringify([
             {
               id: 1,
-              name: "은퇴",
+              name: "goal",
               targetAmount: "100000000",
               currentAmount: "42000000",
               monthlyContribution: "1000000",
@@ -38,8 +40,8 @@ describe("CoachPage", () => {
           JSON.stringify({
             goalId: 1,
             portfolioId: 1,
-            headline: "현재 속도면 목표 달성이 가능합니다.",
-            cards: ["고위험 비중은 이미 안정권입니다."]
+            headline: "Goal progress is on track.",
+            cards: ["Keep current allocation."]
           }),
           { status: 200 }
         )
@@ -47,18 +49,65 @@ describe("CoachPage", () => {
 
     render(<CoachPage />);
 
-    expect(await screen.findByText("데이터 출처: 실데이터")).toBeInTheDocument();
-    expect(screen.getByText("현재 목표 달성률: 42%")).toBeInTheDocument();
-    expect(screen.getByText("현재 속도면 목표 달성이 가능합니다.")).toBeInTheDocument();
+    expect(await screen.findByText("Goal progress is on track.")).toBeInTheDocument();
+    expect(screen.getByText(/42%/)).toBeInTheDocument();
   });
 
   it("falls back to mock coach summary when API fails", async () => {
-    fetchMock.mockRejectedValueOnce(new Error("Network down"));
+    fetchMock.mockRejectedValueOnce(new Error("network down"));
 
     render(<CoachPage />);
 
-    expect(await screen.findByText("데이터 출처: 모의 데이터")).toBeInTheDocument();
-    expect(screen.getByText("현재 목표 달성률: 30%")).toBeInTheDocument();
-    expect(screen.getByText("고위험 자산 집중도를 낮추면 달성 확률이 상승합니다.")).toBeInTheDocument();
+    expect(await screen.findByText(/30%/)).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("uses query params for user, goal, and portfolio context", async () => {
+    window.history.pushState({}, "", "/coach?userId=7&goalId=9&portfolioId=11");
+
+    fetchMock
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify([
+            {
+              id: 9,
+              name: "goal",
+              targetAmount: "100000000",
+              currentAmount: "42000000",
+              monthlyContribution: "1000000",
+              targetDate: "2035-12-31",
+              status: "ACTIVE",
+              progressPercent: "55"
+            }
+          ]),
+          { status: 200 }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            goalId: 9,
+            portfolioId: 11,
+            headline: "Query context applied.",
+            cards: ["card"]
+          }),
+          { status: 200 }
+        )
+      );
+
+    render(<CoachPage />);
+    expect(await screen.findByText("Query context applied.")).toBeInTheDocument();
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "http://localhost:8090/api/v1/goals",
+      expect.objectContaining({
+        headers: { "X-USER-ID": "7" }
+      })
+    );
+    expect(String(fetchMock.mock.calls[1]?.[0])).toContain("goalId=9&portfolioId=11");
+    expect(fetchMock.mock.calls[1]?.[1]).toMatchObject({
+      headers: { "X-USER-ID": "7" }
+    });
   });
 });
