@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { getCoachInsights, getGoals } from "@/lib/api";
 import { getCoachRequestContext } from "@/lib/coachContext";
 
@@ -28,7 +29,12 @@ function formatPercent(value: number): string {
 }
 
 export default function CoachPage() {
-  const requestContext = useMemo(() => getCoachRequestContext(), []);
+  const searchParams = useSearchParams();
+  const searchParamString = searchParams.toString();
+  const requestContext = useMemo(() => {
+    const search = searchParamString ? `?${searchParamString}` : "";
+    return getCoachRequestContext(search);
+  }, [searchParamString]);
   const [dashboard, setDashboard] = useState<CoachDashboard>(FALLBACK_DASHBOARD);
   const [dataSource, setDataSource] = useState<"api" | "mock">("mock");
   const [statusMessage, setStatusMessage] = useState("Loading data.");
@@ -43,10 +49,11 @@ export default function CoachPage() {
         getCoachInsights(requestContext.userId, requestContext.goalId, requestContext.portfolioId)
       ]);
 
-      const progressPercent = Number(goals[0]?.progressPercent);
+      const requestedGoal = goals.find((goal) => goal.id === requestContext.goalId);
+      const progressPercent = Number(requestedGoal?.progressPercent);
       const hasInsights = Array.isArray(insights.cards) && insights.cards.length > 0;
 
-      if (!Number.isFinite(progressPercent) || !hasInsights || !insights.headline.trim()) {
+      if (!requestedGoal || !Number.isFinite(progressPercent) || !hasInsights || !insights.headline.trim()) {
         throw new Error("Coach API payload is incomplete");
       }
 
