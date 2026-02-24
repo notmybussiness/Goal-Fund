@@ -57,3 +57,43 @@ a {
   }
 }
 
+
+.form-input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #0b1321;
+  color: var(--text);
+}
+
+.form-input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.primary-button {
+  margin-top: 16px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid #14532d;
+  background: var(--accent);
+  color: #03240f;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.error-text {
+  margin: 6px 0 0;
+  color: #f87171;
+  font-size: 13px;
+}
+
+.success-text {
+  margin: 6px 0 0;
+  color: #4ade80;
+  font-size: 13px;
+}

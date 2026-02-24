@@ -150,24 +150,20 @@ git push -u origin <branch>
 
 ## 8. CI Baseline
 
-ADR-014 selected `build-only required check` as baseline.
+Current required checks:
 
-Current baseline:
-
-1. Backend build
-2. Frontend build
+1. `backend-test`
+2. `backend-build`
+3. `frontend-lint`
+4. `frontend-build`
 
 One-time repository settings (GitHub):
 
 1. Protect `develop` branch.
 2. Protect `main` branch.
-3. Set required status check to `build`.
+3. Set all four checks above as required status checks.
 4. Disable direct pushes to protected branches.
-
-Future hardening (separate ADR):
-
-1. Add required test gates
-2. Add lint/static analysis gates
+5. Require pull request approval and code owner review.
 
 ---
 

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.NoSuchElementException;
+
 @RestController
 @RequestMapping("/api/v1/coach")
 public class CoachController {
@@ -25,7 +27,11 @@ public class CoachController {
             @RequestParam Long portfolioId
     ) {
         Long effectiveUserId = userId == null ? 1L : userId;
-        return ResponseEntity.ok(coachUseCase.getInsights(effectiveUserId, goalId, portfolioId));
+        try {
+            return ResponseEntity.ok(coachUseCase.getInsights(effectiveUserId, goalId, portfolioId));
+        } catch (NoSuchElementException | IllegalArgumentException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
 

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class PortfolioService implements PortfolioUseCase {
@@ -34,10 +34,15 @@ public class PortfolioService implements PortfolioUseCase {
     }
 
     @Override
-    public PortfolioResponse addHolding(Long userId, Long portfolioId, AddHoldingCommand command) {
-        Portfolio portfolio = portfolioRepositoryPort.findById(portfolioId)
-                .filter(p -> p.userId().equals(userId))
-                .orElseThrow(() -> new NoSuchElementException("Portfolio not found"));
+    public Optional<PortfolioResponse> addHolding(Long userId, Long portfolioId, AddHoldingCommand command) {
+        Optional<Portfolio> maybePortfolio = portfolioRepositoryPort.findById(portfolioId)
+                .filter(p -> p.userId().equals(userId));
+
+        if (maybePortfolio.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Portfolio portfolio = maybePortfolio.get();
 
         List<PortfolioHolding> updated = new ArrayList<>(portfolio.holdings());
         updated.add(new PortfolioHolding(
@@ -76,7 +81,7 @@ public class PortfolioService implements PortfolioUseCase {
                 weighted
         ));
 
-        return toResponse(persisted);
+        return Optional.of(toResponse(persisted));
     }
 
     private PortfolioResponse toResponse(Portfolio p) {

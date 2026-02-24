@@ -68,10 +68,22 @@ public class SimulationService implements SimulationUseCase {
     @Override
     public Optional<SimulationRunResponse> getRun(Long userId, UUID runId) {
         return simulationRepositoryPort.findById(runId)
-                .flatMap(run -> goalRepositoryPort.findById(run.goalId())
-                        .filter(goal -> goal.userId().equals(userId))
-                        .map(goal -> run))
+                .filter(run -> isOwnedByUser(run, userId))
                 .map(this::toResponse);
+    }
+
+    private boolean isOwnedByUser(SimulationRun run, Long userId) {
+        boolean goalOwnedByUser = goalRepositoryPort.findById(run.goalId())
+                .map(goal -> goal.userId().equals(userId))
+                .orElse(false);
+
+        if (!goalOwnedByUser) {
+            return false;
+        }
+
+        return portfolioRepositoryPort.findById(run.portfolioId())
+                .map(portfolio -> portfolio.userId().equals(userId))
+                .orElse(false);
     }
 
     private SimulationRunResponse toResponse(SimulationRun run) {
