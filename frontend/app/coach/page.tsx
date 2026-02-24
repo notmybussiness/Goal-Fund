@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getCoachInsights, getGoals } from "@/lib/api";
 import { getCoachRequestContext } from "@/lib/coachContext";
@@ -28,7 +28,7 @@ function formatPercent(value: number): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
-export default function CoachPage() {
+function CoachPageContent() {
   const searchParams = useSearchParams();
   const searchParamString = searchParams.toString();
   const requestContext = useMemo(() => {
@@ -101,5 +101,30 @@ export default function CoachPage() {
         </ul>
       </article>
     </section>
+  );
+}
+
+function CoachPageFallback() {
+  return (
+    <section className="grid cols-2">
+      <article className="panel">
+        <h2>Goal Progress</h2>
+        <p className="muted">Loading coach dashboard...</p>
+      </article>
+      <article className="panel">
+        <h2>Coach Insights</h2>
+        <p className="muted" style={{ marginTop: 0 }}>
+          Loading insights...
+        </p>
+      </article>
+    </section>
+  );
+}
+
+export default function CoachPage() {
+  return (
+    <Suspense fallback={<CoachPageFallback />}>
+      <CoachPageContent />
+    </Suspense>
   );
 }
