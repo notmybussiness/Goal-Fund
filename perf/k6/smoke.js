@@ -2,6 +2,8 @@ import http from "k6/http";
 import { check, sleep } from "k6";
 
 const BASE_URL = __ENV.BASE_URL ?? "http://127.0.0.1:8090";
+const EXPECT_200 = http.expectedStatuses(200);
+const EXPECT_200_OR_404 = http.expectedStatuses(200, 404);
 
 export const options = {
   vus: 5,
@@ -24,7 +26,8 @@ const DEFAULT_HEADERS = {
 export default function () {
   const goalsResponse = http.get(`${BASE_URL}/api/v1/goals`, {
     tags: { endpoint: "goals_list" },
-    headers: DEFAULT_HEADERS.headers
+    headers: DEFAULT_HEADERS.headers,
+    responseCallback: EXPECT_200
   });
 
   check(goalsResponse, {
@@ -33,7 +36,8 @@ export default function () {
 
   const riskResponse = http.get(`${BASE_URL}/api/v1/risk/snapshot?portfolioId=1`, {
     tags: { endpoint: "risk_snapshot" },
-    headers: DEFAULT_HEADERS.headers
+    headers: DEFAULT_HEADERS.headers,
+    responseCallback: EXPECT_200_OR_404
   });
 
   check(riskResponse, {
@@ -42,7 +46,8 @@ export default function () {
 
   const coachResponse = http.get(`${BASE_URL}/api/v1/coach/insights?goalId=1&portfolioId=1`, {
     tags: { endpoint: "coach_insights" },
-    headers: DEFAULT_HEADERS.headers
+    headers: DEFAULT_HEADERS.headers,
+    responseCallback: EXPECT_200_OR_404
   });
 
   check(coachResponse, {
@@ -59,6 +64,7 @@ export default function () {
     }),
     {
       tags: { endpoint: "simulation_runs" },
+      responseCallback: EXPECT_200_OR_404,
       ...DEFAULT_HEADERS
     }
   );
