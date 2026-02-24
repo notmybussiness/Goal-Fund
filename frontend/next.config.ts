@@ -1,8 +1,15 @@
 import type { NextConfig } from "next";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true
+  reactStrictMode: true,
+  turbopack: {
+    root: currentDir
+  },
+  allowedDevOrigins: ["http://127.0.0.1:3005", "http://localhost:3005"]
 };
 
 export default nextConfig;
-

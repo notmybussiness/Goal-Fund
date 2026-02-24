@@ -16,8 +16,8 @@ This file is the single source of truth for decision status and traceability.
 | ADR-010 | Simulation Parameter Governance | Accepted | ADR-007 | 2026-02-23 | User (Chat) |
 | ADR-011 | Risk Model Definition | Accepted | ADR-010 | 2026-02-23 | User (Chat) |
 | ADR-012 | Cache Strategy | Proposed | ADR-011 | Pending | Pending |
-| ADR-013 | Logging and Observability Stack | Proposed | ADR-014, ADR-015 | Pending | Pending |
-| ADR-014 | CI Gate Policy (Build-only baseline) | Accepted | - | 2026-02-23 | User (Chat) |
+| ADR-013 | Logging and Observability Stack | Accepted | ADR-014, ADR-015 | 2026-02-24 | User (Chat) |
+| ADR-014 | CI Gate Policy (Quality Baseline) | Accepted | - | 2026-02-24 | User (Chat) |
 | ADR-015 | Dev/Prod Branch Deployment Strategy | Accepted | ADR-014, ADR-016 | 2026-02-23 | User (Chat) |
 | ADR-016 | Secrets and Environment Separation Policy | Accepted | - | 2026-02-23 | User (Chat) |
 

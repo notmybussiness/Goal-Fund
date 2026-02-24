@@ -3,6 +3,7 @@
 Thumbs.db
 .vscode/
 .idea/
+.worktrees/
 
 # Env files
 .env
@@ -27,6 +28,9 @@ frontend/.turbo/
 
 # Test and coverage outputs
 coverage/
+frontend/playwright-report/
+frontend/test-results/
+frontend/.playwright/
 
 # Runtime artifacts
 *.pid

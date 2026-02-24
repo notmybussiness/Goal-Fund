@@ -53,3 +53,22 @@ Frontend:
 2. Confirm scheduled batch jobs run successfully.
 3. Check API p95 latency targets.
 4. Verify auth and permission flow in production.
+
+## 8. MVP Release Checklist
+
+1. Required checks green on release PR:
+   - `backend-test`
+   - `backend-build`
+   - `frontend-lint`
+   - `frontend-build`
+   - `frontend-e2e`
+   - `perf-smoke`
+   - `tdd-evidence-check`
+2. E2E command proof attached:
+   - `npm run test:e2e` (frontend)
+3. Perf smoke proof attached:
+   - `k6 run perf/k6/smoke.js`
+4. Batch scheduler verified:
+   - cron properties are set in `backend/src/main/resources/application.yml`
+   - scheduler bean is active in runtime logs
+5. Release notes and tag prepared before merge to `main`.

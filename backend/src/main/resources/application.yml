@@ -11,4 +11,14 @@ management:
       exposure:
         include: health,info,metrics
 
+goalfund:
+  batch:
+    zone: Asia/Seoul
+    price-history:
+      cron: "0 5 0 * * *"
+    risk-feature:
+      cron: "0 15 0 * * *"
+    simulation-input:
+      cron: "0 25 0 * * *"
+
 

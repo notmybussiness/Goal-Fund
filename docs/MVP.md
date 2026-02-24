@@ -1,46 +1,47 @@
-# 목표한푼 MVP Definition
+# Goal Fund MVP Definition
 
-문서 버전: v1.1  
-작성일: 2026-02-23
+Version: v1.2  
+Date: 2026-02-24
 
 ## 1. MVP Scope
 
-### Core Feature 6
+### Core Features (6)
 
-1. Goal Management
-2. Portfolio Input and Holdings
-3. Risk One-Page Snapshot
-4. Monte Carlo Goal Probability
-5. Rebalancing Proposal
-6. Coach Insight Cards
+1. Goal management
+2. Portfolio and holdings input
+3. Risk one-page snapshot
+4. Monte Carlo goal probability
+5. Rebalancing proposal
+6. Coach insight cards
 
 ### Out of Scope
 
-1. AI/RAG Deep Analysis
-2. Full Backtest Integration
-3. Broker Order Execution
+1. AI/RAG deep analysis
+2. Full backtest engine integration
+3. Broker order execution
 
 ## 2. MVP User Stories
 
-1. 사용자는 목표 금액/기한을 등록할 수 있다.
-2. 사용자는 보유 자산과 비중을 입력/수정할 수 있다.
-3. 사용자는 리스크 기여도와 집중 요인을 확인할 수 있다.
-4. 사용자는 목표달성 확률을 계산할 수 있다.
-5. 사용자는 리밸런싱 제안을 생성/조회할 수 있다.
-6. 사용자는 코치 인사이트 카드를 확인할 수 있다.
+1. User can register goal amount and target date.
+2. User can register and update holdings and allocation.
+3. User can review current risk contribution.
+4. User can check goal success probability.
+5. User can review generated rebalance actions.
+6. User can review coach insight cards.
 
 ## 3. Release Readiness Checklist
 
-1. Core API contract freeze
-2. Core domain tests all green
-3. E2E critical scenarios pass
-4. Batch jobs run daily without failure
-5. Monitoring and error alert connected
+1. Core API contract freeze completed.
+2. Domain/unit/integration checks pass.
+3. E2E critical scenarios pass.
+4. Batch jobs run daily without failure.
+5. Monitoring and alert baseline is connected.
 
-## 4. KPI Dashboard
+## 4. KPI Dashboard (MVP)
 
 1. Goal creation completion ratio
 2. Simulation completion ratio
-3. Active weekly users
+3. Weekly active users
 4. Simulation API p95
 5. Batch success ratio
+

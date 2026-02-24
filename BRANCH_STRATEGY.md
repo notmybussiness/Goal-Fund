@@ -25,8 +25,11 @@ This repo publishes these checks from `.github/workflows/build.yml`:
 2. `backend-build`
 3. `frontend-lint`
 4. `frontend-build`
+5. `frontend-e2e`
+6. `perf-smoke`
+7. `tdd-evidence-check`
 
-Set all four checks as required for protected branches.
+Set all checks as required for protected branches.
 
 ## 4. Branch Protection Settings (What You Must Configure In GitHub)
 
@@ -51,6 +54,9 @@ Apply these settings to both `develop` and `main`.
    - `backend-build`
    - `frontend-lint`
    - `frontend-build`
+   - `frontend-e2e`
+   - `perf-smoke`
+   - `tdd-evidence-check`
 7. `Require branches to be up to date before merging`
 8. Disable force push
 9. Disable branch deletion
