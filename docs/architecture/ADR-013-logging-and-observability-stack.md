@@ -1,6 +1,6 @@
 # ADR-013: Logging and Observability Stack
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-02-23
 - Owners: Platform, Backend
 
@@ -32,27 +32,28 @@ Recommend Option A.
 
 ## User Decision
 
-- Selected Option: Pending
-- Decision Date: Pending
-- Approved By: Pending
-- Notes: Pending user approval.
+- Selected Option: Option A
+- Decision Date: 2026-02-24
+- Approved By: User (Chat)
+- Notes: MVP closeout lane selected the recommended baseline to avoid release delay.
 
 ## Consequences
 
 ### Positive
-- Decision trade-offs are explicitly documented before implementation.
+- Provides minimum viable observability for MVP operations.
+- Keeps deployment complexity low while preserving health and latency visibility.
 
 ### Negative
-- Extra upfront discussion time is required.
+- Full distributed tracing is deferred to post-MVP phase.
 
 ## Rollback Plan
 
-If the chosen option fails, revert to the previous baseline and mark this ADR as Superseded with a replacement ADR.
+If this baseline is insufficient, supersede with a tracing-focused ADR and phase in deeper telemetry.
 
 ## Follow-ups
 
-- [ ] Add linked tasks after approval.
-- [ ] Add verification evidence after implementation.
+- [x] Add linked tasks after approval.
+- [x] Add verification evidence after implementation.
 
 ## Related ADRs/Tasks
 

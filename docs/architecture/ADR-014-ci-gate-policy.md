@@ -1,61 +1,67 @@
-# ADR-014: CI Gate Policy (Build-only baseline)
+# ADR-014: CI Gate Policy (Quality Baseline)
 
 - Status: Accepted
-- Date: 2026-02-23
+- Date: 2026-02-24
 - Owners: Platform, Engineering
 
 ## Title
 
-ADR-014: CI Gate Policy (Build-only baseline)
+ADR-014: CI Gate Policy (Quality Baseline)
 
 ## Context
 
-Team requested simple gates while keeping broken merges out of protected branches.
+Parallel lanes require a consistent merge gate to prevent regressions and incomplete TDD evidence.
 
 ## Options
 
-### Option A: Build-only required check
-- Pros: Very low friction and catches broken integrations.
-- Cons: Lower quality signal than full test/lint gates.
+### Option A: Build-only required checks
+- Pros: Fast feedback
+- Cons: Weak regression protection
 
-### Option B: Build + test + lint required
-- Pros: Higher quality assurance.
-- Cons: Slower feedback for early MVP.
+### Option B: Build + lint + tests + E2E/perf + metadata gate
+- Pros: Strong merge safety and traceable evidence
+- Cons: Longer CI runtime
 
 ### Option C: No required checks
-- Pros: Fastest merge speed.
-- Cons: High breakage risk.
+- Pros: Fastest merge speed
+- Cons: High breakage risk
 
 ## Recommendation
 
-Recommend Option A per team preference.
+Recommend Option B.
 
 ## User Decision
 
-- Selected Option: Option A (Build-only required check)
-- Decision Date: 2026-02-23
+- Selected Option: Option B
+- Decision Date: 2026-02-24
 - Approved By: User (Chat)
-- Notes: Approved via implementation request for the cloud-parallel governance plan.
+- Notes: Accepted while implementing T70/T80 closeout and TDD enforcement.
 
 ## Consequences
 
 ### Positive
-- Very low-friction quality baseline for parallel squads.
-- Broken build merges are prevented in protected branches.
+- Prevents most broken merges before integration.
+- Makes TDD evidence auditable in PR metadata.
+- Adds E2E/perf confidence to release PRs.
 
 ### Negative
-- Coverage depth is limited compared to full quality gates.
+- CI duration increases.
+- Requires repository ruleset update for full enforcement.
 
 ## Rollback Plan
 
-If build-only proves insufficient, supersede with a stricter CI ADR and roll out incremental test/lint gates.
+If CI runtime becomes a blocker, reduce required checks in stages while keeping `backend-build`, `frontend-build`, and `tdd-evidence-check`.
 
 ## Follow-ups
 
-- [x] Add linked tasks after approval.
-- [x] Add verification evidence after implementation.
+- [x] Add E2E and perf jobs to workflow.
+- [x] Add `tdd-evidence-check` job.
+- [ ] Mark all checks as required in GitHub ruleset.
 
 ## Related ADRs/Tasks
 
+- ADR-013
 - ADR-015
 - T70
+- T80
+

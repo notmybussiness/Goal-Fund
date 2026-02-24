@@ -1,13 +1,13 @@
 # Ports and Adapters Design
 
-臾몄꽌 踰꾩쟾: v1.0  
-?묒꽦?? 2026-02-23
+Version: v1.1  
+Date: 2026-02-24
 
-## 1. 援ъ“ ?먯튃
+## 1. Principles
 
-- ?꾨찓?몄? ?꾨젅?꾩썙?ъ뿉 ?섏〈?섏? ?딅뒗??
-- ?좏뵆由ъ??댁뀡? ?ы듃(interface)濡??몃? ?섏〈??異붿긽?뷀븳??
-- ?대뙌?곕뒗 ?ы듃 援ы쁽泥대줈 諛곗튂/??DB/?몃? API瑜??곌껐?쒕떎.
+1. Domain and application layers must not depend on framework details.
+2. Application contracts are expressed through inbound/outbound ports.
+3. Adapters implement ports and connect web, batch, DB, and external APIs.
 
 ## 2. Package Convention
 
@@ -44,10 +44,9 @@ com.goalfund.goalfund
 
 ## 5. Adapter Mapping
 
-1. REST Controller -> Inbound Port
-2. Batch Job/Scheduler -> Inbound Port
-3. JPA Repository Adapter -> Outbound Port
-4. External Market Client Adapter -> PriceSeriesPort
-5. Cache Adapter -> Read-model acceleration
-
+1. REST controller -> inbound port
+2. Batch scheduler/job -> inbound port
+3. JPA repository adapter -> outbound port
+4. External market client -> `PriceSeriesPort`
+5. Cache adapter -> read model acceleration
 
