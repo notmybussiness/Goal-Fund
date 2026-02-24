@@ -1,43 +1,50 @@
 # Acceptance Criteria
 
-문서 버전: v1.0  
-작성일: 2026-02-23
+Version: v1.1  
+Date: 2026-02-24
 
 ## 1. Domain Test Scenarios
 
-1. 목표 진행률 계산
-- Given: 목표금액 100,000,000 / 현재자산 30,000,000 / 월적립 1,000,000
-- Expect: 진행률 30%
-
-2. 리스크 기여도 합
-- Given: 기여도 목록
-- Expect: 총합 100% (허용 오차 0.01)
-
-3. 시뮬레이션 확률 범위
-- Given: n회 시뮬레이션
-- Expect: 0 <= 성공확률 <= 100
-
-4. 리밸런싱 액션 일관성
-- Given: 제안 액션 목록
-- Expect: 매수/매도 후 목표 비중 오차가 정책 임계값 이내
+1. Goal progress calculation
+   - Given: target amount 100,000,000 / current amount 30,000,000 / monthly contribution 1,000,000
+   - Expect: progress percent 30%
+2. Risk contribution normalization
+   - Given: contribution list
+   - Expect: sum is 100% (within tolerance 0.01)
+3. Simulation probability range
+   - Given: n simulation scenarios
+   - Expect: `0 <= successProbabilityPercent <= 100`
+4. Rebalance action consistency
+   - Given: proposal action list
+   - Expect: buy/sell actions reduce target allocation gaps
 
 ## 2. API Integration Scenarios
 
-1. Goal CRUD 권한 검증
-2. Portfolio-Holding 참조 무결성 검증
-3. Simulation run 생성/조회 일관성 검증
-4. Batch 실행 후 스냅샷 API 반영 확인
+1. Goal CRUD ownership and visibility checks
+2. Portfolio and holding reference integrity checks
+3. Simulation run create/get flow checks
+4. Batch run API and downstream risk snapshot reflection checks
 
 ## 3. E2E Scenarios
 
-1. 온보딩 완료 -> 코치 진입
-2. 목표 달성 확률 계산 성공
-3. 리밸런싱 제안 생성/조회
-4. 로그아웃/재로그인 후 상태 복원
+1. Onboarding goal form persists payload in browser storage
+2. Onboarding portfolio form persists normalized symbol payload
+3. Coach dashboard route renders and responds to query context
+4. Risk/simulation/rebalance pages render without runtime failure
 
 ## 4. Performance Criteria
 
 1. Simulation API p95 <= 3s
-2. Risk Snapshot API p95 <= 500ms
-3. 배치 실패 복구 성공률 100% (7연속 실행)
+2. Risk snapshot API p95 <= 500ms
+3. Coach insights API p95 <= 1s
+4. Batch jobs complete daily run without failure
 
+## 5. Execution Commands
+
+1. Unit/integration tests
+   - Frontend: `npm run test` (in `frontend`)
+   - Backend: `gradle test` (in `backend`, CI-managed)
+2. E2E tests
+   - `npm run test:e2e` (in `frontend`)
+3. Perf smoke
+   - `k6 run perf/k6/smoke.js`

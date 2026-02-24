@@ -30,6 +30,13 @@
 - API behavior check (integration test or manual endpoint proof):
 - Risks/rollback notes:
 
+## TDD Gate (Required for `feat/*` and `fix/*`)
+
+- [ ] RED step verified (failing test command + expected failure summary)
+- [ ] GREEN step verified (passing test command + pass summary)
+- [ ] Tests were added or updated for changed behavior
+- [ ] Regression test added (`fix/*` only)
+
 ## Branch and Release Check
 
 - [ ] Base branch is `develop`
